@@ -49,9 +49,41 @@ Para publicar una nueva versión:
 2. Actualizá `WHMCS_SIMPLE_VERSION` en el código
 3. Actualizá `Stable tag:` en `readme.txt` y agregá entrada al changelog
 4. Commit y push a `main`
-5. Creá una **GitHub Release** con tag `v1.x.x` (ej: `v1.0.3`) desde la página del repositorio
+5. Creá una **GitHub Release** con tag `v1.x.x` desde la página del repositorio
 
-WordPress detecta el update en el próximo chequeo automático (cada 12 h) o al visitar **Dashboard → Actualizaciones**.
+WordPress chequea automáticamente al entrar a la página de Plugins (máximo una vez cada 5 minutos).
+
+## Changelog
+
+### 1.0.6
+- Selector de idioma en ajustes: Automático / Español / English, independiente del idioma de WordPress.
+- Chequeo automático de actualizaciones al entrar a la página de plugins (throttle de 5 minutos).
+
+### 1.0.5
+- Soporte completo de traducciones (i18n). Español automático para todas las variantes `es_*`, inglés para el resto.
+- GitHub token: se puede definir con la constante `WHMCS_SIMPLE_GITHUB_TOKEN` en `wp-config.php` (recomendado) o desde el panel de ajustes.
+- Página de ajustes muestra aviso cuando el token está definido por constante.
+
+### 1.0.4
+- Agrega campo GitHub Token en ajustes para autenticar llamadas a la API de GitHub y evitar error 403.
+
+### 1.0.3
+- Cambia detección de actualizaciones a GitHub Releases (más confiable que branch tracking).
+
+### 1.0.2
+- Caché en tres capas: request cache (in-memory), object cache (Redis/Memcached) y transients (DB).
+- Versioned keys: el botón "Borrar caché" invalida todas las entradas atómicamente sin importar el backend.
+- Nuevo botón "Borrar caché" en la página de ajustes.
+- Corrige precio duplicado: se extrae solo el valor numérico de la respuesta de WHMCS antes de añadir el prefijo `$AR` / `U$S`.
+
+### 1.0.1
+- Agrega link "Configuración" en la página de plugins de WordPress.
+
+### 1.0.0
+- Versión inicial.
+- Shortcode `[whmcs]` con soporte para `pid`, `bc` y `currency`.
+- Caché via transients de WordPress configurable.
+- Actualizaciones automáticas desde GitHub via Plugin Update Checker.
 
 ## Licencia
 
