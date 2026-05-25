@@ -1,0 +1,102 @@
+# WHMCS Price Simple - Translation Template
+# Copyright (C) 2025 Fernando Sandmann
+# This file is distributed under the same license as the plugin.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WHMCS Price Simple 1.0.5\n"
+"Report-Msgid-Bugs-To: https://github.com/sis-argentina/whmcs-price-simple\n"
+"POT-Creation-Date: 2025-05-25 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: Manual\n"
+"X-Domain: whmcs-price-simple\n"
+
+msgid "Settings"
+msgstr ""
+
+msgid "Cache cleared successfully. Current version: %d."
+msgstr ""
+
+msgid "Settings saved."
+msgstr ""
+
+msgid "WHMCS Base URL"
+msgstr ""
+
+msgid "Without trailing slash. Example:"
+msgstr ""
+
+msgid "Cache (seconds)"
+msgstr ""
+
+msgid "Cache lifetime. Minimum 60s. Default: 3600 (1 hour)."
+msgstr ""
+
+msgid "GitHub Token"
+msgstr ""
+
+msgid "Token defined via constant in wp-config.php. The field below is ignored."
+msgstr ""
+
+msgid "GitHub Personal Access Token to avoid API rate limits (403)."
+msgstr ""
+
+msgid "Recommended: define %1$sWHMCS_SIMPLE_GITHUB_TOKEN%2$s in wp-config.php to keep the token out of the database."
+msgstr ""
+
+msgid "Minimum permissions: Contents read-only on the whmcs-price-simple repository."
+msgstr ""
+
+msgid "Save changes"
+msgstr ""
+
+msgid "Cache"
+msgstr ""
+
+msgid "Current version: %d"
+msgstr ""
+
+msgid "Clearing the cache will force WordPress to fetch fresh prices from WHMCS on the next page visit."
+msgstr ""
+
+msgid "Clear cache"
+msgstr ""
+
+msgid "Shortcode usage"
+msgstr ""
+
+msgid "Attribute"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "WHMCS Product ID"
+msgstr ""
+
+msgid "Billing cycle: 1m, 3m, 6m, 1y, 2y, 3y"
+msgstr ""
+
+msgid "WHMCS Currency ID (1 = ARS, other = USD)"
+msgstr ""
+
+msgid "Output currency=1:"
+msgstr ""
+
+msgid "Output currency≠1:"
+msgstr ""
+
+msgid "price"
+msgstr ""
+
+msgid "month"
+msgstr ""
+
+msgid "mes"
+msgstr ""

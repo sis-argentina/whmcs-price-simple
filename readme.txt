@@ -2,7 +2,7 @@
 Contributors: sis-argentina
 Requires at least: 5.0
 Tested up to: 6.7
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -38,6 +38,11 @@ No depende de wordpress.org. Las actualizaciones se distribuyen directamente des
 4. Configurá la URL de tu WHMCS en Ajustes → WHMCS Price Simple.
 
 == Changelog ==
+
+= 1.0.5 =
+* Agrega soporte completo de traducciones (i18n). Español automático para todas las variantes es_*, inglés para el resto.
+* GitHub token: se puede definir con la constante WHMCS_SIMPLE_GITHUB_TOKEN en wp-config.php (recomendado) o desde el panel de ajustes.
+* Página de ajustes muestra aviso cuando el token está definido por constante.
 
 = 1.0.4 =
 * Agrega campo GitHub Token en ajustes para autenticar llamadas a la API de GitHub y evitar error 403.

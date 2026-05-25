@@ -1,0 +1,106 @@
+# WHMCS Price Simple - Spanish Translation
+# Copyright (C) 2025 Fernando Sandmann
+# This file is distributed under the same license as the plugin.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WHMCS Price Simple 1.0.5\n"
+"Report-Msgid-Bugs-To: https://github.com/sis-argentina/whmcs-price-simple\n"
+"POT-Creation-Date: 2025-05-25 00:00+0000\n"
+"PO-Revision-Date: 2025-05-25 00:00+0000\n"
+"Last-Translator: Fernando Sandmann\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Manual\n"
+"X-Domain: whmcs-price-simple\n"
+
+msgid "Settings"
+msgstr "Configuración"
+
+msgid "Cache cleared successfully. Current version: %d."
+msgstr "Caché borrado correctamente. Versión actual: %d."
+
+msgid "Settings saved."
+msgstr "Configuración guardada."
+
+msgid "WHMCS Base URL"
+msgstr "URL base de WHMCS"
+
+msgid "Without trailing slash. Example:"
+msgstr "Sin barra final. Ejemplo:"
+
+msgid "Cache (seconds)"
+msgstr "Caché (segundos)"
+
+msgid "Cache lifetime. Minimum 60s. Default: 3600 (1 hour)."
+msgstr "Tiempo de vida del caché. Mínimo 60 s. Default: 3600 (1 hora)."
+
+msgid "GitHub Token"
+msgstr "Token de GitHub"
+
+msgid "Token defined via constant in wp-config.php. The field below is ignored."
+msgstr "Token definido por constante en wp-config.php. El campo de abajo es ignorado."
+
+msgid "GitHub Personal Access Token to avoid API rate limits (403)."
+msgstr "Personal Access Token de GitHub para evitar el límite de la API (403)."
+
+msgid "Recommended: define %1$sWHMCS_SIMPLE_GITHUB_TOKEN%2$s in wp-config.php to keep the token out of the database."
+msgstr "Recomendado: definí %1$sWHMCS_SIMPLE_GITHUB_TOKEN%2$s en wp-config.php para no guardar el token en la base de datos."
+
+msgid "Minimum permissions: Contents read-only on the whmcs-price-simple repository."
+msgstr "Permisos mínimos: lectura de Contents en el repositorio whmcs-price-simple."
+
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+msgid "Cache"
+msgstr "Caché"
+
+msgid "Current version: %d"
+msgstr "Versión actual: %d"
+
+msgid "Clearing the cache will force WordPress to fetch fresh prices from WHMCS on the next page visit."
+msgstr "Al borrar el caché, WordPress pedirá precios frescos a WHMCS en la próxima visita a cada página."
+
+msgid "Clear cache"
+msgstr "Borrar caché"
+
+msgid "Shortcode usage"
+msgstr "Uso del shortcode"
+
+msgid "Attribute"
+msgstr "Atributo"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "WHMCS Product ID"
+msgstr "ID del producto en WHMCS"
+
+msgid "Billing cycle: 1m, 3m, 6m, 1y, 2y, 3y"
+msgstr "Ciclo de facturación: 1m, 3m, 6m, 1y, 2y, 3y"
+
+msgid "WHMCS Currency ID (1 = ARS, other = USD)"
+msgstr "ID de moneda en WHMCS (1 = ARS, otro = USD)"
+
+msgid "Output currency=1:"
+msgstr "Salida currency=1:"
+
+msgid "Output currency≠1:"
+msgstr "Salida currency≠1:"
+
+msgid "price"
+msgstr "precio"
+
+msgid "month"
+msgstr "mes"
+
+msgid "mes"
+msgstr "mes"
