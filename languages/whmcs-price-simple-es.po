@@ -27,6 +27,12 @@ msgstr "Caché borrado correctamente. Versión actual: %d."
 msgid "Settings saved."
 msgstr "Configuración guardada."
 
+msgid "Auto (WordPress locale)"
+msgstr "Automático (idioma de WordPress)"
+
+msgid "Override the plugin language regardless of the WordPress locale."
+msgstr "Forzar el idioma del plugin sin importar el idioma de WordPress."
+
 msgid "WHMCS Base URL"
 msgstr "URL base de WHMCS"
 

@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WHMCS Price Simple
  * Description: Displays WHMCS product prices via the [whmcs pid="10" bc="1m" currency="1"] shortcode.
- * Version:     1.0.5
+ * Version:     1.0.6
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:      Fernando Sandmann
@@ -21,12 +21,27 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WHMCS_SIMPLE_VERSION', '1.0.5' );
+define( 'WHMCS_SIMPLE_VERSION', '1.0.6' );
+
+// ── Language override ─────────────────────────────────────────────────────────
+// Must be hooked before load_plugin_textdomain() runs on plugins_loaded.
+// Options: 'auto' (WordPress locale), 'es' (Spanish .mo), 'en' (code strings).
+add_filter( 'plugin_locale', function ( $locale, $domain ) {
+	if ( 'whmcs-price-simple' !== $domain ) {
+		return $locale;
+	}
+	$override = get_option( 'whmcs_simple_locale', 'auto' );
+	if ( 'es' === $override ) {
+		return 'es';
+	}
+	if ( 'en' === $override ) {
+		// No en_US.mo file exists → WordPress falls back to code strings (English).
+		return 'en_US';
+	}
+	return $locale;
+}, 10, 2 );
 
 // ── Translations ──────────────────────────────────────────────────────────────
-// Loads /languages/whmcs-price-simple-{locale}.mo automatically.
-// Spanish variants (es_AR, es_ES, es_MX, …) use whmcs-price-simple-es.mo.
-// All other locales fall back to the English strings in the code.
 add_action( 'plugins_loaded', function () {
 	load_plugin_textdomain(
 		'whmcs-price-simple',
@@ -35,7 +50,7 @@ add_action( 'plugins_loaded', function () {
 	);
 } );
 
-// ── Automatic updates from GitHub ────────────────────────────────────────────
+// ── Automatic updates from GitHub ─────────────────────────────────────────────
 require_once plugin_dir_path( __FILE__ ) . 'vendor/plugin-update-checker/load-v5p6.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
@@ -54,6 +69,20 @@ if ( ! empty( $_whmcs_gh_token ) ) {
 }
 unset( $_whmcs_gh_token );
 
+// Make the updater accessible to the plugins-page hook below.
+$GLOBALS['whmcs_simple_updater'] = $whmcsSimpleUpdater;
+
+// ── Force update check on every visit to the plugins page ────────────────────
+// checkForUpdates() always makes a live HTTP call to the GitHub API, so we
+// throttle it to at most once every 5 minutes using a short-lived transient.
+add_action( 'load-plugins.php', function () {
+	if ( get_transient( 'whmcs_simple_update_throttle' ) ) {
+		return;
+	}
+	set_transient( 'whmcs_simple_update_throttle', 1, 5 * MINUTE_IN_SECONDS );
+	$GLOBALS['whmcs_simple_updater']->checkForUpdates();
+} );
+
 // ── "Settings" link on plugins list ──────────────────────────────────────────
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
 	$url = admin_url( 'options-general.php?page=whmcs_simple' );
@@ -62,13 +91,6 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $li
 } );
 
 // ── Three-layer cache ─────────────────────────────────────────────────────────
-// 1. Request cache  — in-memory array, lives for one PHP process.
-// 2. Object cache   — Redis/Memcached via wp_cache_get/set (if available).
-// 3. Transients     — database, universal fallback.
-//
-// Invalidation uses versioned keys: bumping whmcs_simple_cache_version makes
-// all previous keys unreachable without needing a key inventory.
-
 /** @var array<string,string> */
 $whmcs_simple_request_cache = [];
 
@@ -145,21 +167,26 @@ function whmcs_simple_settings_page(): void {
 	}
 
 	if ( isset( $_POST['whmcs_simple_save'] ) && check_admin_referer( 'whmcs_simple_settings' ) ) {
-		$url   = esc_url_raw( trim( sanitize_text_field( wp_unslash( $_POST['whmcs_url'] ?? '' ) ) ) );
-		$ttl   = max( 60, absint( $_POST['whmcs_ttl'] ?? 3600 ) );
-		$token = sanitize_text_field( wp_unslash( $_POST['whmcs_github_token'] ?? '' ) );
+		$url    = esc_url_raw( trim( sanitize_text_field( wp_unslash( $_POST['whmcs_url'] ?? '' ) ) ) );
+		$ttl    = max( 60, absint( $_POST['whmcs_ttl'] ?? 3600 ) );
+		$token  = sanitize_text_field( wp_unslash( $_POST['whmcs_github_token'] ?? '' ) );
+		$locale = in_array( $_POST['whmcs_locale'] ?? 'auto', [ 'auto', 'es', 'en' ], true )
+			? sanitize_key( $_POST['whmcs_locale'] )
+			: 'auto';
 		update_option( 'whmcs_simple_url', $url );
 		update_option( 'whmcs_simple_ttl', $ttl );
 		update_option( 'whmcs_simple_github_token', $token );
+		update_option( 'whmcs_simple_locale', $locale );
 		$notice_type = 'success';
 		$notice_text = __( 'Settings saved.', 'whmcs-price-simple' );
 	}
 
-	$saved_url       = get_option( 'whmcs_simple_url', '' );
-	$saved_ttl       = (int) get_option( 'whmcs_simple_ttl', 3600 );
-	$saved_token     = get_option( 'whmcs_simple_github_token', '' );
-	$token_constant  = defined( 'WHMCS_SIMPLE_GITHUB_TOKEN' ) && WHMCS_SIMPLE_GITHUB_TOKEN;
-	$cache_ver       = whmcs_simple_cache_version();
+	$saved_url      = get_option( 'whmcs_simple_url', '' );
+	$saved_ttl      = (int) get_option( 'whmcs_simple_ttl', 3600 );
+	$saved_token    = get_option( 'whmcs_simple_github_token', '' );
+	$saved_locale   = get_option( 'whmcs_simple_locale', 'auto' );
+	$token_constant = defined( 'WHMCS_SIMPLE_GITHUB_TOKEN' ) && WHMCS_SIMPLE_GITHUB_TOKEN;
+	$cache_ver      = whmcs_simple_cache_version();
 	?>
 	<div class="wrap">
 		<h1>WHMCS Price Simple</h1>
@@ -187,6 +214,19 @@ function whmcs_simple_settings_page(): void {
 					</td>
 				</tr>
 				<tr>
+					<th><label for="whmcs_locale">Language / Idioma</label></th>
+					<td>
+						<select id="whmcs_locale" name="whmcs_locale">
+							<option value="auto" <?php selected( $saved_locale, 'auto' ); ?>>
+								<?php esc_html_e( 'Auto (WordPress locale)', 'whmcs-price-simple' ); ?>
+							</option>
+							<option value="es" <?php selected( $saved_locale, 'es' ); ?>>Español</option>
+							<option value="en" <?php selected( $saved_locale, 'en' ); ?>>English</option>
+						</select>
+						<p class="description"><?php esc_html_e( 'Override the plugin language regardless of the WordPress locale.', 'whmcs-price-simple' ); ?></p>
+					</td>
+				</tr>
+				<tr>
 					<th><label for="whmcs_ttl"><?php esc_html_e( 'Cache (seconds)', 'whmcs-price-simple' ); ?></label></th>
 					<td>
 						<input type="number" id="whmcs_ttl" name="whmcs_ttl"
@@ -211,14 +251,13 @@ function whmcs_simple_settings_page(): void {
 							<?php esc_html_e( 'GitHub Personal Access Token to avoid API rate limits (403).', 'whmcs-price-simple' ); ?><br>
 							<?php
 							printf(
-								/* translators: 1: opening <strong>, 2: closing </strong> */
+								/* translators: 1: opening tag, 2: closing tag */
 								esc_html__( 'Recommended: define %1$sWHMCS_SIMPLE_GITHUB_TOKEN%2$s in wp-config.php to keep the token out of the database.', 'whmcs-price-simple' ),
 								'<strong><code>',
 								'</code></strong>'
 							);
 							?>
-							<br>
-							<code>define( 'WHMCS_SIMPLE_GITHUB_TOKEN', 'ghp_yourtoken' );</code><br>
+							<br><code>define( 'WHMCS_SIMPLE_GITHUB_TOKEN', 'ghp_yourtoken' );</code><br>
 							<?php esc_html_e( 'Minimum permissions: Contents read-only on the whmcs-price-simple repository.', 'whmcs-price-simple' ); ?>
 						</p>
 					</td>
@@ -232,13 +271,7 @@ function whmcs_simple_settings_page(): void {
 		<hr>
 		<h2><?php esc_html_e( 'Cache', 'whmcs-price-simple' ); ?></h2>
 		<p>
-			<?php
-			printf(
-				/* translators: %d: current cache version number */
-				esc_html__( 'Current version: %d', 'whmcs-price-simple' ),
-				esc_html( $cache_ver )
-			);
-			?><br>
+			<?php printf( esc_html__( 'Current version: %d', 'whmcs-price-simple' ), esc_html( $cache_ver ) ); ?><br>
 			<span class="description"><?php esc_html_e( 'Clearing the cache will force WordPress to fetch fresh prices from WHMCS on the next page visit.', 'whmcs-price-simple' ); ?></span>
 		</p>
 		<form method="post">
@@ -264,7 +297,7 @@ function whmcs_simple_settings_page(): void {
 			</tbody>
 		</table>
 		<p>
-			<?php esc_html_e( 'Output currency=1:', 'whmcs-price-simple' ); ?> <strong>$AR [<?php esc_html_e( 'price', 'whmcs-price-simple' ); ?>] <small>/ <?php esc_html_e( 'month', 'whmcs-price-simple' ); ?></small></strong><br>
+			<?php esc_html_e( 'Output currency=1:', 'whmcs-price-simple' ); ?> <strong>$AR [<?php esc_html_e( 'price', 'whmcs-price-simple' ); ?>] <small>/ <?php esc_html_e( 'mes', 'whmcs-price-simple' ); ?></small></strong><br>
 			<?php esc_html_e( 'Output currency≠1:', 'whmcs-price-simple' ); ?> <strong>U$S [<?php esc_html_e( 'price', 'whmcs-price-simple' ); ?>] <small>/ monthly</small></strong>
 		</p>
 	</div>
@@ -314,12 +347,10 @@ function whmcs_simple_shortcode( $atts ): string {
 		return '';
 	}
 
-	// WHMCS may return the price with its own currency symbol (e.g. "$ 500.00").
-	// Extract only the numeric value to avoid duplicating the currency prefix.
 	$amount = whmcs_simple_extract_amount( $raw );
 
 	if ( 1 === $currency ) {
-		/* translators: price suffix for ARS currency, inside <small> tag */
+		/* translators: price period suffix for ARS inside <small> tag */
 		return '$AR ' . esc_html( $amount ) . ' <small>/ ' . esc_html__( 'mes', 'whmcs-price-simple' ) . '</small>';
 	}
 
@@ -350,19 +381,16 @@ function whmcs_simple_get_price( int $pid, string $billing_cycle, int $currency 
 
 	$cache_key = 'whmcs_s_' . md5( $pid . '_' . $billing_cycle . '_' . $currency );
 
-	// Layer 1: request cache (in-memory).
 	if ( isset( $whmcs_simple_request_cache[ $cache_key ] ) ) {
 		return $whmcs_simple_request_cache[ $cache_key ];
 	}
 
-	// Layer 2: object cache (Redis/Memcached) + transient (DB).
 	$cached = whmcs_simple_get_cache( $cache_key );
 	if ( false !== $cached ) {
 		$whmcs_simple_request_cache[ $cache_key ] = (string) $cached;
 		return (string) $cached;
 	}
 
-	// Layer 3: HTTP call to WHMCS.
 	$url = add_query_arg(
 		[
 			'pid'          => $pid,
@@ -391,7 +419,6 @@ function whmcs_simple_get_price( int $pid, string $billing_cycle, int $currency 
 		return 'NA';
 	}
 
-	// Unwrap WHMCS JS responses: document.write('500.00');
 	if ( preg_match( "/^document\\.write\\('(.*?)'\\);$/s", $body, $matches ) ) {
 		$body = $matches[1];
 	}
