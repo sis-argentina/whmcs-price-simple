@@ -2,7 +2,7 @@
 Contributors: sis-argentina
 Requires at least: 5.0
 Tested up to: 6.7
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -38,6 +38,9 @@ No depende de wordpress.org. Las actualizaciones se distribuyen directamente des
 4. Configurá la URL de tu WHMCS en Ajustes → WHMCS Price Simple.
 
 == Changelog ==
+
+= 1.0.3 =
+* Cambia detección de actualizaciones a GitHub Releases (más confiable que branch tracking).
 
 = 1.0.2 =
 * Caché en tres capas: request cache (in-memory), object cache (Redis/Memcached) y transients (DB).

@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WHMCS Price Simple
  * Description: Muestra precios de productos WHMCS mediante el shortcode [whmcs pid="10" bc="1m" currency="1"].
- * Version:     1.0.2
+ * Version:     1.0.3
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:      Fernando Sandmann
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WHMCS_SIMPLE_VERSION', '1.0.2' );
+define( 'WHMCS_SIMPLE_VERSION', '1.0.3' );
 
 // ── Actualizaciones automáticas desde GitHub ─────────────────────────────────
 require_once plugin_dir_path( __FILE__ ) . 'vendor/plugin-update-checker/load-v5p6.php';
@@ -25,7 +25,8 @@ $whmcsSimpleUpdater = PucFactory::buildUpdateChecker(
 	__FILE__,
 	'whmcs-price-simple'
 );
-$whmcsSimpleUpdater->setBranch( 'main' );
+// Sin setBranch: PUC usa la última GitHub Release para detectar actualizaciones.
+// Flujo: push del código → crear release en GitHub con tag v1.x.x → WordPress detecta el update.
 
 // ── Link "Configuración" en la página de plugins ─────────────────────────────
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {

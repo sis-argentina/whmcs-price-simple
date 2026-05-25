@@ -41,13 +41,17 @@ El `/mes` y `/monthly` se renderizan dentro de `<small>`.
 
 ## Actualizaciones
 
-El plugin usa [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker). Al hacer push a `main` con una versión mayor en el header del plugin, WordPress muestra automáticamente la notificación de actualización.
+El plugin usa [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker) con **GitHub Releases**. WordPress detecta la actualización cuando existe una release con un tag de versión mayor a la instalada.
 
 Para publicar una nueva versión:
 
 1. Actualizá `Version:` en el header de `whmcs-price.php`
 2. Actualizá `WHMCS_SIMPLE_VERSION` en el código
-3. Commit y push a `main`
+3. Actualizá `Stable tag:` en `readme.txt` y agregá entrada al changelog
+4. Commit y push a `main`
+5. Creá una **GitHub Release** con tag `v1.x.x` (ej: `v1.0.3`) desde la página del repositorio
+
+WordPress detecta el update en el próximo chequeo automático (cada 12 h) o al visitar **Dashboard → Actualizaciones**.
 
 ## Licencia
 
