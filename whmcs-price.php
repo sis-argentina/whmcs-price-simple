@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WHMCS Price Simple
  * Description: Muestra precios de productos WHMCS mediante el shortcode [whmcs pid="10" bc="1m" currency="1"].
- * Version:     1.0.3
+ * Version:     1.0.4
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:      Fernando Sandmann
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WHMCS_SIMPLE_VERSION', '1.0.3' );
+define( 'WHMCS_SIMPLE_VERSION', '1.0.4' );
 
 // ── Actualizaciones automáticas desde GitHub ─────────────────────────────────
 require_once plugin_dir_path( __FILE__ ) . 'vendor/plugin-update-checker/load-v5p6.php';
@@ -25,8 +25,12 @@ $whmcsSimpleUpdater = PucFactory::buildUpdateChecker(
 	__FILE__,
 	'whmcs-price-simple'
 );
-// Sin setBranch: PUC usa la última GitHub Release para detectar actualizaciones.
-// Flujo: push del código → crear release en GitHub con tag v1.x.x → WordPress detecta el update.
+// PUC usa la última GitHub Release para detectar actualizaciones.
+// Un token evita el límite de 60 req/hora de la API pública de GitHub.
+$gh_token = get_option( 'whmcs_simple_github_token', '' );
+if ( ! empty( $gh_token ) ) {
+	$whmcsSimpleUpdater->setAuthentication( $gh_token );
+}
 
 // ── Link "Configuración" en la página de plugins ─────────────────────────────
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
@@ -120,18 +124,21 @@ function whmcs_simple_settings_page(): void {
 	}
 
 	if ( isset( $_POST['whmcs_simple_save'] ) && check_admin_referer( 'whmcs_simple_settings' ) ) {
-		$url = esc_url_raw( trim( sanitize_text_field( wp_unslash( $_POST['whmcs_url'] ?? '' ) ) ) );
-		$ttl = absint( $_POST['whmcs_ttl'] ?? 3600 );
-		$ttl = max( 60, $ttl );
+		$url   = esc_url_raw( trim( sanitize_text_field( wp_unslash( $_POST['whmcs_url'] ?? '' ) ) ) );
+		$ttl   = absint( $_POST['whmcs_ttl'] ?? 3600 );
+		$ttl   = max( 60, $ttl );
+		$token = sanitize_text_field( wp_unslash( $_POST['whmcs_github_token'] ?? '' ) );
 		update_option( 'whmcs_simple_url', $url );
 		update_option( 'whmcs_simple_ttl', $ttl );
+		update_option( 'whmcs_simple_github_token', $token );
 		$notice_type = 'success';
 		$notice_text = 'Configuración guardada.';
 	}
 
-	$saved_url = get_option( 'whmcs_simple_url', '' );
-	$saved_ttl = (int) get_option( 'whmcs_simple_ttl', 3600 );
-	$cache_ver = whmcs_simple_cache_version();
+	$saved_url   = get_option( 'whmcs_simple_url', '' );
+	$saved_ttl   = (int) get_option( 'whmcs_simple_ttl', 3600 );
+	$saved_token = get_option( 'whmcs_simple_github_token', '' );
+	$cache_ver   = whmcs_simple_cache_version();
 	?>
 	<div class="wrap">
 		<h1>WHMCS Price Simple</h1>
@@ -162,6 +169,19 @@ function whmcs_simple_settings_page(): void {
 							value="<?php echo esc_attr( $saved_ttl ); ?>"
 							class="small-text" min="60" />
 						<p class="description">Tiempo de vida del caché. Mínimo 60 s. Default: 3600 (1 hora).</p>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="whmcs_github_token">GitHub Token</label></th>
+					<td>
+						<input type="password" id="whmcs_github_token" name="whmcs_github_token"
+							value="<?php echo esc_attr( $saved_token ); ?>"
+							class="regular-text" autocomplete="off" />
+						<p class="description">
+							Personal Access Token de GitHub para evitar el límite de la API (403).<br>
+							Crealo en <strong>GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>.<br>
+							Permisos mínimos: acceso de solo lectura al repositorio <code>whmcs-price-simple</code>.
+						</p>
 					</td>
 				</tr>
 			</table>
