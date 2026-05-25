@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WHMCS Price Simple
  * Description: Displays WHMCS product prices via the [whmcs pid="10" bc="1m" currency="1"] shortcode.
- * Version:     1.0.6
+ * Version:     1.0.7
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:      Fernando Sandmann
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WHMCS_SIMPLE_VERSION', '1.0.6' );
+define( 'WHMCS_SIMPLE_VERSION', '1.0.7' );
 
 // ── Language override ─────────────────────────────────────────────────────────
 // Must be hooked before load_plugin_textdomain() runs on plugins_loaded.
@@ -37,6 +37,10 @@ add_filter( 'plugin_locale', function ( $locale, $domain ) {
 	if ( 'en' === $override ) {
 		// No en_US.mo file exists → WordPress falls back to code strings (English).
 		return 'en_US';
+	}
+	// Auto: any es_* variant (es_AR, es_ES, es_MX, …) maps to 'es' so the .mo is found.
+	if ( str_starts_with( $locale, 'es_' ) || 'es' === $locale ) {
+		return 'es';
 	}
 	return $locale;
 }, 10, 2 );

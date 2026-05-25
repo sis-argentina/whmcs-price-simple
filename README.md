@@ -55,6 +55,9 @@ WordPress chequea automáticamente al entrar a la página de Plugins (máximo un
 
 ## Changelog
 
+### 1.0.7
+- Corrige detección automática de español: cualquier variante `es_*` (`es_AR`, `es_ES`, `es_MX`…) carga el `.mo` correcto en modo Auto.
+
 ### 1.0.6
 - Selector de idioma en ajustes: Automático / Español / English, independiente del idioma de WordPress.
 - Chequeo automático de actualizaciones al entrar a la página de plugins (throttle de 5 minutos).
