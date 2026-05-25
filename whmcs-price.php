@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WHMCS Price Simple
  * Description: Displays WHMCS product prices via the [whmcs pid="10" bc="1m" currency="1"] shortcode.
- * Version:     1.0.8
+ * Version:     1.0.9
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:      Fernando Sandmann
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WHMCS_SIMPLE_VERSION', '1.0.8' );
+define( 'WHMCS_SIMPLE_VERSION', '1.0.9' );
 
 // ── Translations ──────────────────────────────────────────────────────────────
 // Uses load_textdomain() directly with the resolved .mo path instead of

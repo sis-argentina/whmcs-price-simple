@@ -1,8 +1,8 @@
 === WHMCS Price Simple ===
 Contributors: sis-argentina
 Requires at least: 5.0
-Tested up to: 6.7
-Stable tag: 1.0.8
+Tested up to: 7.0
+Stable tag: 1.0.9
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -38,6 +38,9 @@ No depende de wordpress.org. Las actualizaciones se distribuyen directamente des
 4. Configurá la URL de tu WHMCS en Ajustes → WHMCS Price Simple.
 
 == Changelog ==
+
+= 1.0.9 =
+* Compatible con WordPress 7.
 
 = 1.0.8 =
 * Corrige carga de traducciones usando load_textdomain() directo en lugar de plugin_locale filter, que es ignorado por el sistema JIT de WordPress 6.1+.

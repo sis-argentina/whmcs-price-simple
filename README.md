@@ -55,6 +55,9 @@ WordPress chequea automáticamente al entrar a la página de Plugins (máximo un
 
 ## Changelog
 
+### 1.0.9
+- Compatible con WordPress 7.
+
 ### 1.0.8
 - Corrige carga de traducciones usando `load_textdomain()` directo en lugar del filtro `plugin_locale`, que es ignorado por el sistema JIT de WordPress 6.1+.
 - La autodetección de español (`es_ES`, `es_AR`, etc.) ahora funciona correctamente.
