@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WHMCS Price Simple
  * Description: Displays WHMCS product prices via the [whmcs pid="10" bc="1m" currency="1"] shortcode.
- * Version:     1.0.7
+ * Version:     1.0.8
  * Requires at least: 5.0
  * Requires PHP:      7.4
  * Author:      Fernando Sandmann
@@ -21,37 +21,35 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WHMCS_SIMPLE_VERSION', '1.0.7' );
-
-// ── Language override ─────────────────────────────────────────────────────────
-// Must be hooked before load_plugin_textdomain() runs on plugins_loaded.
-// Options: 'auto' (WordPress locale), 'es' (Spanish .mo), 'en' (code strings).
-add_filter( 'plugin_locale', function ( $locale, $domain ) {
-	if ( 'whmcs-price-simple' !== $domain ) {
-		return $locale;
-	}
-	$override = get_option( 'whmcs_simple_locale', 'auto' );
-	if ( 'es' === $override ) {
-		return 'es';
-	}
-	if ( 'en' === $override ) {
-		// No en_US.mo file exists → WordPress falls back to code strings (English).
-		return 'en_US';
-	}
-	// Auto: any es_* variant (es_AR, es_ES, es_MX, …) maps to 'es' so the .mo is found.
-	if ( str_starts_with( $locale, 'es_' ) || 'es' === $locale ) {
-		return 'es';
-	}
-	return $locale;
-}, 10, 2 );
+define( 'WHMCS_SIMPLE_VERSION', '1.0.8' );
 
 // ── Translations ──────────────────────────────────────────────────────────────
+// Uses load_textdomain() directly with the resolved .mo path instead of
+// plugin_locale filter + load_plugin_textdomain(), which is unreliable in
+// WordPress 6.1+ due to the JIT translation loading system.
 add_action( 'plugins_loaded', function () {
-	load_plugin_textdomain(
-		'whmcs-price-simple',
-		false,
-		dirname( plugin_basename( __FILE__ ) ) . '/languages'
-	);
+	$override  = get_option( 'whmcs_simple_locale', 'auto' );
+	$wp_locale = get_locale();
+
+	if ( 'en' === $override ) {
+		return; // English is the default; no .mo needed.
+	}
+
+	if ( 'es' === $override ) {
+		$locale = 'es';
+	} else {
+		// Auto: any es_* variant (es_AR, es_ES, es_MX, …) → Spanish.
+		$locale = ( str_starts_with( $wp_locale, 'es_' ) || 'es' === $wp_locale ) ? 'es' : null;
+	}
+
+	if ( null === $locale ) {
+		return; // Non-Spanish locale, English strings in code are used.
+	}
+
+	$mo = plugin_dir_path( __FILE__ ) . 'languages/whmcs-price-simple-' . $locale . '.mo';
+	if ( file_exists( $mo ) ) {
+		load_textdomain( 'whmcs-price-simple', $mo );
+	}
 } );
 
 // ── Automatic updates from GitHub ─────────────────────────────────────────────

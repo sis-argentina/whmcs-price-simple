@@ -2,7 +2,7 @@
 Contributors: sis-argentina
 Requires at least: 5.0
 Tested up to: 6.7
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -38,6 +38,10 @@ No depende de wordpress.org. Las actualizaciones se distribuyen directamente des
 4. Configurá la URL de tu WHMCS en Ajustes → WHMCS Price Simple.
 
 == Changelog ==
+
+= 1.0.8 =
+* Corrige carga de traducciones usando load_textdomain() directo en lugar de plugin_locale filter, que es ignorado por el sistema JIT de WordPress 6.1+.
+* La autodetección de español (es_ES, es_AR, etc.) ahora funciona correctamente.
 
 = 1.0.7 =
 * Corrige detección automática de español: cualquier variante es_* (es_AR, es_ES, es_MX…) carga el .mo correcto en modo Auto.
